@@ -1,33 +1,39 @@
 const wrap = require('word-wrap');
+const cp = require('child_process');
+const fs = require('fs');
 
 module.exports = {
     prompter(cz, commit) {
-        global.console.log(`Line 1 will be cropped at 100 characters.
-            All other lines will be wrapped after 100 characters.`);
-        cz.prompt([{
+        var jiraIssue = '',
+            jiraProject = '';
+
+        var options = [{
             type: 'list',
             name: 'type',
             message: 'Select the type of change that you\'re committing:',
             choices: [{
-                name: 'feat:     A new feature',
+                name: 'feat: A new feature',
                 value: 'feat'
             }, {
-                name: 'fix:      A bug fix',
+                name: 'fix: A bug fix',
                 value: 'fix'
             }, {
-                name: `refactor: A change that neither fixes a bug nor adds a feature
-            (for example, comments and code style fixes)`,
+                name: 'refactor: A change that neither fixes a bug nor adds a feature',
                 value: 'refactor'
             }, {
-                name: 'perf:     A change that improves performance',
+                name: 'perf: A change that improves performance',
                 value: 'perf'
             }, {
-                name: 'test:     A change that adds or updates tests',
+                name: 'test: A change that adds or updates tests',
                 value: 'test'
             }, {
-                name: 'chore:    A change to the build process, auxiliary tools, or documentation',
+                name: 'chore: A change to the build process, auxiliary tools, or documentation',
                 value: 'chore'
             }]
+        }, {
+            type: 'input',
+            name: 'scope',
+            message: 'Denote the scope of this change (home, settings...):\n'
         }, {
             type: 'input',
             name: 'subject',
@@ -36,8 +42,32 @@ module.exports = {
             type: 'input',
             name: 'body',
             message: 'Provide a longer description of the change (emphasis on WHY not WHAT):\n'
-        }]).then(answers => {
-            const maxLineWidth = 100;
+        }];
+
+        var packageJSON = fs.readFileSync('package.json');
+        if (packageJSON) {
+            packageJSON = JSON.parse(packageJSON);
+            jiraProject = packageJSON.config && packageJSON.config.jiraProject;
+        }
+
+        if (jiraProject) {
+            var res = cp.spawnSync('git', ['rev-parse', '--abbrev-ref', 'HEAD']);
+            if (res && res.stdout) {
+                var re = new RegExp(jiraProject + '-(\\d+)', 'g'),
+                    match = re.exec(res.stdout.toString());
+                jiraIssue = match && match[1] || '';
+            }
+
+            options.unshift({
+                type: 'input',
+                name: 'jiraIssue',
+                message: `Jira issue (${jiraProject}-)`,
+                default: jiraIssue
+            });
+        }
+
+        cz.prompt(options).then(answers => {
+            const maxLineWidth = 120;
 
             const wrapOptions = {
                 trim: true,
@@ -46,9 +76,15 @@ module.exports = {
                 width: maxLineWidth
             };
 
+            if (answers.jiraIssue) {
+                jiraIssue = jiraProject + '-' + answers.jiraIssue;
+            }
+
+            var scope = answers.scope.trim();
+            scope = scope ? '(' + answers.scope.trim() + ')' : '';
 
             // Hard limit this line
-            const head = `${answers.type}: ${answers.subject.trim()}`.slice(0, maxLineWidth);
+            const head = `${jiraIssue} ${answers.type}${scope} ${answers.subject.trim()}`;
 
             // Wrap these lines at 100 characters
             const body = wrap(answers.body, wrapOptions);

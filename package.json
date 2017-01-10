@@ -1,5 +1,5 @@
 {
-  "name": "cz-simple-conventional-changelog",
+  "name": "cz-jira-simple-changelog",
   "version": "0.0.1",
   "description": "Simplified commitizen adapter following the conventional-changelog format.",
   "main": "index.js",
