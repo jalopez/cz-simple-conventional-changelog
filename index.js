@@ -38,10 +38,6 @@ module.exports = {
             type: 'input',
             name: 'subject',
             message: 'Write a short, imperative present tense description of the change:\n'
-        }, {
-            type: 'input',
-            name: 'body',
-            message: 'Provide a longer description of the change (emphasis on WHY not WHAT):\n'
         }];
 
         var packageJSON = fs.readFileSync('package.json');
@@ -84,12 +80,10 @@ module.exports = {
             scope = scope ? '(' + answers.scope.trim() + ')' : '';
 
             // Hard limit this line
-            const head = `${jiraIssue} ${answers.type}${scope} ${answers.subject.trim()}`;
+            const head = `${jiraIssue} ${answers.type}${scope}: ${answers.subject.trim()}`;
+        
 
-            // Wrap these lines at 100 characters
-            const body = wrap(answers.body, wrapOptions);
-
-            commit(`${head}\n\n${body}`);
+            commit(`${head}`);
         });
     }
 };
