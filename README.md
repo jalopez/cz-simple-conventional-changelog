@@ -20,3 +20,5 @@ Infers jira issue based on branch name:
 ```
 MYPROJECT-2345 feat(home) Add new feature to home
 ```
+
+Adds a `pull` commit type, being the scope the pull request number, like `pull(#123) description here`.

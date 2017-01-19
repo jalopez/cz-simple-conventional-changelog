@@ -29,6 +29,10 @@ module.exports = {
             }, {
                 name: 'chore: A change to the build process, auxiliary tools, or documentation',
                 value: 'chore'
+            },
+            {
+                name: 'pull: A change sugested in a pull request. The scope is the pull request number',
+                value: 'pull'
             }]
         }, {
             type: 'input',
@@ -81,7 +85,7 @@ module.exports = {
 
             // Hard limit this line
             const head = `${jiraIssue} ${answers.type}${scope}: ${answers.subject.trim()}`;
-        
+
 
             commit(`${head}`);
         });
