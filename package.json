@@ -7,10 +7,10 @@
     "commit": "git-cz",
     "test": "echo 'Tests need to be setup!'"
   },
-  "homepage": "https://github.com/finom/cz-simple-conventional-changelog",
+  "homepage": "https://github.com/jalopez/cz-jira-simple-changelog",
   "repository": {
     "type": "git",
-    "url": "https://github.com/finom/cz-simple-conventional-changelog.git"
+    "url": "https://github.com/jalopez/cz-jira-simple-changelog.git"
   },
   "author": "Jim Cummins <jimthedev@gmail.com>, Andrey Gubanov <andrey.a.gubanov@gmail.com>",
   "license": "MIT",
